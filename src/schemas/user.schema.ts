@@ -1,4 +1,4 @@
-import { Prop, Schema } from "@nestjs/mongoose";
+import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import mongoose from "mongoose";
 
 @Schema()
@@ -28,3 +28,5 @@ export class User {
     @Prop({ type: mongoose.Schema.Types.String })
     code: string;
 }
+
+export const UserSchema = SchemaFactory.createForClass(User);

@@ -7,7 +7,11 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { env } from './config/app.config';
 
 @Module({
-  imports: [UserModule, AuthModule, MongooseModule.forRoot(env.MONGO_URL)],
+  imports: [UserModule, AuthModule, MongooseModule.forRootAsync({
+    useFactory: () => ({
+      uri: env.MONGODB_URI,
+    })
+  })],
   controllers: [AppController],
   providers: [AppService],
 })

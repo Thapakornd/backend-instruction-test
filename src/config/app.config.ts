@@ -1,5 +1,7 @@
-import { cleanEnv, str } from 'envalid';
+import { cleanEnv, num, str } from 'envalid';
 
 export const env = cleanEnv(process.env, {
-  MONGO_URL: str(),
+  MONGODB_URI: str(),
+  APP_PORT: num(),
+  APP_SESSION_SECRET: str(),
 });
