@@ -9,4 +9,8 @@ export class AuthService {
     async createUser(createUserDto: CreateUserDto) {
         
     }
+
+    async validateUser(password: string, username?: string, email?: string): Promise<void> {
+        const user = await this.userService.findOne(username, email);
+    }
 }
