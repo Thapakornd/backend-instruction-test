@@ -15,6 +15,7 @@ import {AuthenticatedGuard} from './auth/guard/authenticated.guard';
     MongooseModule.forRootAsync({
       useFactory: () => ({
         uri: env.MONGODB_URI,
+        dbName: env.MONGODB_DATABASE,
       }),
     }),
   ],

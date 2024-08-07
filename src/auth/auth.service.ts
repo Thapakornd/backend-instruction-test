@@ -1,16 +1,37 @@
-import { Injectable } from '@nestjs/common';
-import { CreateUserDto } from 'src/models/user/dto/create-user.dto';
-import { UserService } from 'src/models/user/user.service';
+import {ConflictException, Injectable} from '@nestjs/common';
+import {CreateUserDto} from 'src/models/user/dto/create-user.dto';
+import {UserService} from 'src/models/user/user.service';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
   constructor(private readonly userService: UserService) {}
 
-    async createUser(createUserDto: CreateUserDto) {
-        
-    }
+  async createUser(createUserDto: CreateUserDto): Promise<void> {
+    const [usernameExist, emailExist] = await Promise.all([
+      this.userService.findOne(createUserDto.username),
+      this.userService.findOne(undefined, createUserDto.email),
+    ]);
 
-    async validateUser(password: string, username?: string, email?: string): Promise<void> {
-        const user = await this.userService.findOne(username, email);
-    }
+    if (usernameExist)
+      throw new ConflictException('username already exist');
+    if (emailExist)
+      throw new ConflictException('email already exist.')
+
+    const salt = await bcrypt.genSalt();
+    const hashedPassword = await bcrypt.hash(createUserDto.password, salt);
+
+    await this.userService.create({
+      ...createUserDto,
+      password: hashedPassword,
+    });
+  }
+
+  async validateUser(
+    password: string,
+    username?: string,
+    email?: string,
+  ): Promise<void> {
+    const user = await this.userService.findOne(username, email);
+  }
 }

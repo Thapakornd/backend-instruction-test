@@ -6,10 +6,10 @@ export type UserDocument = HydratedDocument<User>;
 @Schema()
 export class User {
 
-    @Prop({ required: true, type: mongoose.Schema.Types.String })
+    @Prop({ required: true, type: mongoose.Schema.Types.String, unique: true })
     username: string;
     
-    @Prop({ required: true, type: mongoose.Schema.Types.String })
+    @Prop({ required: true, type: mongoose.Schema.Types.String, unique: true })
     email: string;
 
     @Prop({ required: true, type: mongoose.Schema.Types.String })
