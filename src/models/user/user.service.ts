@@ -11,9 +11,16 @@ export class UserService {
     await this.userRepository.create(createUserDto);
   }
 
-  async findOne(username?: string, email?: string): Promise<User | null> {
-    if (username) return this.userRepository.findOneByUsername(username);
-    else if (email) return this.userRepository.findOneByUsername(email);
+  async findOneByUsernameOrEmail(usernameOrEmail: string): Promise<User | null> {
+    if(usernameOrEmail) return this.userRepository.findOneByUsernameOrEmail(usernameOrEmail);
     throw new Error("username or email should not empty.");
+  }
+
+  async findOneByUsername(username: string): Promise<User> {
+    return await this.userRepository.findOneByUsername(username);
+  }
+
+  async findOneByEmail(email: string): Promise<User> {
+    return await this.userRepository.findOneByEmail(email);
   }
 }

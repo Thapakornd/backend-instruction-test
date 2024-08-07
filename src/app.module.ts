@@ -7,11 +7,16 @@ import {MongooseModule} from '@nestjs/mongoose';
 import {env} from './config/app.config';
 import {APP_GUARD} from '@nestjs/core';
 import {AuthenticatedGuard} from './auth/guard/authenticated.guard';
+import { PassportModule } from '@nestjs/passport';
+import { SessionSerializer } from './auth/utils/session-serializer';
 
 @Module({
   imports: [
     UserModule,
     AuthModule,
+    PassportModule.register({
+      session: true,
+    }),
     MongooseModule.forRootAsync({
       useFactory: () => ({
         uri: env.MONGODB_URI,
@@ -26,6 +31,7 @@ import {AuthenticatedGuard} from './auth/guard/authenticated.guard';
       provide: APP_GUARD,
       useClass: AuthenticatedGuard,
     },
+    SessionSerializer,
   ],
 })
 export class AppModule {}

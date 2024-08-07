@@ -2,6 +2,7 @@ import {ConflictException, Injectable} from '@nestjs/common';
 import {CreateUserDto} from 'src/models/user/dto/create-user.dto';
 import {UserService} from 'src/models/user/user.service';
 import * as bcrypt from 'bcrypt';
+import {User} from 'src/schemas/user.schema';
 
 @Injectable()
 export class AuthService {
@@ -9,14 +10,12 @@ export class AuthService {
 
   async createUser(createUserDto: CreateUserDto): Promise<void> {
     const [usernameExist, emailExist] = await Promise.all([
-      this.userService.findOne(createUserDto.username),
-      this.userService.findOne(undefined, createUserDto.email),
+      this.userService.findOneByUsername(createUserDto.username),
+      this.userService.findOneByEmail(createUserDto.email),
     ]);
 
-    if (usernameExist)
-      throw new ConflictException('username already exist');
-    if (emailExist)
-      throw new ConflictException('email already exist.')
+    if (usernameExist) throw new ConflictException('username already exist');
+    if (emailExist) throw new ConflictException('email already exist.');
 
     const salt = await bcrypt.genSalt();
     const hashedPassword = await bcrypt.hash(createUserDto.password, salt);
@@ -27,11 +26,11 @@ export class AuthService {
     });
   }
 
-  async validateUser(
-    password: string,
-    username?: string,
-    email?: string,
-  ): Promise<void> {
-    const user = await this.userService.findOne(username, email);
+  async validateUser(usernameOrEmail: string, password: string): Promise<User | null> {
+    const user = await this.userService.findOneByUsernameOrEmail(usernameOrEmail);
+    if (!user) return null;
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (isMatch) return user;
   }
 }
