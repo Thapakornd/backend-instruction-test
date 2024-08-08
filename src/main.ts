@@ -1,7 +1,7 @@
-import {NestFactory, Reflector} from '@nestjs/core';
-import {AppModule} from './app.module';
-import {ClassSerializerInterceptor, ValidationPipe} from '@nestjs/common';
-import {env} from './config/app.config';
+import { NestFactory, Reflector } from '@nestjs/core';
+import { AppModule } from './app.module';
+import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
+import { env } from './config/app.config';
 import * as session from 'express-session';
 import * as passport from 'passport';
 import * as cookieParser from 'cookie-parser';
@@ -32,7 +32,6 @@ async function bootstrap() {
   );
   app.use(passport.initialize());
   app.use(passport.session());
-
 
   await app.listen(env.APP_PORT);
 }

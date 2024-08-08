@@ -1,6 +1,6 @@
-import {CanActivate, ExecutionContext, Injectable} from '@nestjs/common';
-import {Reflector} from '@nestjs/core';
-import {IS_PUBLIC_KEY} from '../decorator/public-route.decorator';
+import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
+import { IS_PUBLIC_KEY } from '../decorator/public-route.decorator';
 
 @Injectable()
 export class AuthenticatedGuard implements CanActivate {
@@ -13,7 +13,6 @@ export class AuthenticatedGuard implements CanActivate {
     );
     if (isPublic) return true;
     const request = context.switchToHttp().getRequest();
-    console.log(request);
     return request.isAuthenticated();
   }
 }

@@ -1,7 +1,8 @@
-import {Injectable} from '@nestjs/common';
-import {PassportSerializer} from '@nestjs/passport';
-import {UserService} from 'src/models/user/user.service';
-import {User} from 'src/schemas/user.schema';
+import { Injectable } from '@nestjs/common';
+import { PassportSerializer } from '@nestjs/passport';
+import { ResponseUserDto } from 'src/models/user/dto/res-user.dto';
+import { UserService } from 'src/models/user/user.service';
+import { User } from 'src/schemas/user.schema';
 
 @Injectable()
 export class SessionSerializer extends PassportSerializer {
@@ -9,13 +10,12 @@ export class SessionSerializer extends PassportSerializer {
     super();
   }
 
-  serializeUser(user: User, done: (err, user: User) => void) {
-    done(null, user);
+  serializeUser(user: User, done: (err, username: string) => void) {
+    done(null, user.username);
   }
 
-  async deserializeUser(user: User, done: (err, user: User) => void) {
-    console.log('deserializer');
-    const userDb = await this.userService.findOneByUsername(user.username);
+  async deserializeUser(username: string, done: (err, user: ResponseUserDto) => void) {
+    const userDb = await this.userService.findOneByUsername(username);
     return userDb ? done(null, userDb) : done(null, null);
   }
 }

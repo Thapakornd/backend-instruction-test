@@ -1,8 +1,8 @@
-import { Request } from "express";
-import { CreateUserDto } from "src/models/user/dto/create-user.dto";
+import { Request } from 'express';
+import { ResponseUserDto } from 'src/models/user/dto/res-user.dto';
 
 export interface PassportRequest extends Request {
-    user: PassportUser;
+  user: PassportUser;
 }
 
-interface PassportUser extends CreateUserDto {}
+interface PassportUser extends ResponseUserDto {}

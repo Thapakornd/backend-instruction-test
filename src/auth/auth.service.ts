@@ -1,8 +1,8 @@
-import {ConflictException, Injectable} from '@nestjs/common';
-import {CreateUserDto} from 'src/models/user/dto/create-user.dto';
-import {UserService} from 'src/models/user/user.service';
+import { ConflictException, Injectable } from '@nestjs/common';
+import { CreateUserDto } from 'src/models/user/dto/create-user.dto';
+import { UserService } from 'src/models/user/user.service';
 import * as bcrypt from 'bcrypt';
-import {User} from 'src/schemas/user.schema';
+import { User } from 'src/schemas/user.schema';
 
 @Injectable()
 export class AuthService {
@@ -26,8 +26,12 @@ export class AuthService {
     });
   }
 
-  async validateUser(usernameOrEmail: string, password: string): Promise<User | null> {
-    const user = await this.userService.findOneByUsernameOrEmail(usernameOrEmail);
+  async validateUser(
+    usernameOrEmail: string,
+    password: string,
+  ): Promise<User | null> {
+    const user =
+      await this.userService.findOneByUsernameOrEmail(usernameOrEmail);
     if (!user) return null;
 
     const isMatch = await bcrypt.compare(password, user.password);
