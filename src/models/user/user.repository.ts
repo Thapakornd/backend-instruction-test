@@ -50,16 +50,14 @@ export class UserRepository {
   }
 
   async findCodeByUsername(username: string): Promise<ResponseCodeDto> {
-    return await this.userModel.findOne({ username });
+    return await this.userModel.findOne({ username }, { code: true });
   }
 
   async findOneByCode(code: string): Promise<{ username: string }> {
     return await this.userModel.findOne({ code }, { username: true });
   }
 
-  async insertCode(userId: number, code: string): Promise<string> {
-    return await this.userModel.findByIdAndUpdate(userId, {
-      code,
-    });
+  async insertCode(username: string, code: string): Promise<string> {
+    return await this.userModel.findOneAndUpdate({ username }, { code });
   }
 }

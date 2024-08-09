@@ -65,17 +65,23 @@ export class UserService {
     const userCodeExist = await this.userRepository.findCodeByUsername(
       user.username,
     );
+    
     const userCode =
-      userCodeExist !== null
-        ? userCodeExist
+      userCodeExist?.code
+        ? userCodeExist.code
         : this.generateCode(user.firstName, user.lastName);
+    
+    if (!userCodeExist?.code) {
+      await this.userRepository.insertCode(user.username, userCode)
+    } 
+
     return plainToInstance(ResponseCodeDto, { code: userCode });
   }
 
   private generateCode(firstname: string, lastname: string): string {
     const timestamp = Date.now();
     const data = `${firstname}-${lastname}-${timestamp}`;
-    return createHash('sha-256').update(data).digest('hex');
+    return createHash('sha-256').update(data).digest('hex').substring(0, 10).toUpperCase();
   }
 
   private getLot(
