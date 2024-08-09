@@ -20,7 +20,7 @@ export class User {
   @Prop({ required: true, type: mongoose.Schema.Types.String })
   lastName: string;
 
-  @Prop({ type: mongoose.Schema.Types.BigInt })
+  @Prop({ type: mongoose.Schema.Types.Number })
   lot: number;
 
   @Prop({ default: 0, type: mongoose.Schema.Types.String })

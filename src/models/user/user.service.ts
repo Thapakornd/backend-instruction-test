@@ -7,6 +7,7 @@ import { User } from 'src/schemas/user.schema';
 import { plainToInstance } from 'class-transformer';
 import { ResponseCodeDto } from './dto/res-code.dto';
 import * as bcrypt from 'bcrypt';
+import { ResponseLotDto } from './dto/res-lot.dto';
 
 @Injectable()
 export class UserService {
@@ -76,6 +77,11 @@ export class UserService {
     } 
 
     return plainToInstance(ResponseCodeDto, { code: userCode });
+  }
+
+  async findLot(user: ResponseUserDto): Promise<ResponseLotDto> {
+    const userLot = await this.userRepository.findLotByUsername(user.username);
+    return plainToInstance(ResponseLotDto, userLot);
   }
 
   private generateCode(firstname: string, lastname: string): string {

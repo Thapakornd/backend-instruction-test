@@ -5,6 +5,7 @@ import { User } from 'src/schemas/user.schema';
 import { CreateUserDto } from './dto/create-user.dto';
 import { ResponseUserDto } from './dto/res-user.dto';
 import { ResponseCodeDto } from './dto/res-code.dto';
+import { ResponseLotDto } from './dto/res-lot.dto';
 
 @Injectable()
 export class UserRepository {
@@ -57,7 +58,11 @@ export class UserRepository {
     return await this.userModel.findOne({ code }, { username: true });
   }
 
-  async insertCode(username: string, code: string): Promise<string> {
-    return await this.userModel.findOneAndUpdate({ username }, { code });
+  async insertCode(username: string, code: string): Promise<void> {
+    await this.userModel.findOneAndUpdate({ username }, { code });
+  }
+
+  async findLotByUsername(username: string): Promise<ResponseLotDto> {
+    return await this.userModel.findOne({ username }, { lot: true });
   }
 }
