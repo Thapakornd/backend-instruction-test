@@ -9,7 +9,7 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Get('code')
-  async getUserCode(@Req() req: PassportRequest) {
+  getUserCode(@Req() req: PassportRequest) {
     return this.userService.getCode(req.user);
   }
 

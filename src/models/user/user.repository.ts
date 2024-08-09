@@ -4,24 +4,23 @@ import { Model } from 'mongoose';
 import { User } from 'src/schemas/user.schema';
 import { CreateUserDto } from './dto/create-user.dto';
 import { ResponseUserDto } from './dto/res-user.dto';
+import { ResponseCodeDto } from './dto/res-code.dto';
 
 @Injectable()
 export class UserRepository {
   constructor(@InjectModel(User.name) private userModel: Model<User>) {}
 
   async findOneByUsernameOrEmail(username: string): Promise<User> {
-    return await this.userModel.findOne(
-      {
-        $or: [
-          {
-            email: username,
-          },
-          {
-            username: username,
-          },
-        ],
-      },
-    );
+    return await this.userModel.findOne({
+      $or: [
+        {
+          email: username,
+        },
+        {
+          username: username,
+        },
+      ],
+    });
   }
 
   async findOneByEmail(email: string): Promise<ResponseUserDto> {
@@ -50,10 +49,12 @@ export class UserRepository {
     return new this.userModel(createUserDto).save();
   }
 
-  async findCode(userId: number): Promise<{ code: string }> {
-    return await this.userModel.findById(userId, {
-      code: true,
-    });
+  async findCodeByUsername(username: string): Promise<ResponseCodeDto> {
+    return await this.userModel.findOne({ username });
+  }
+
+  async findOneByCode(code: string): Promise<{ username: string }> {
+    return await this.userModel.findOne({ code }, { username: true });
   }
 
   async insertCode(userId: number, code: string): Promise<string> {

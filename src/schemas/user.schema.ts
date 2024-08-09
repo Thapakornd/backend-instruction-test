@@ -30,6 +30,9 @@ export class User {
   commissionUser: User[];
 
   @Prop({ type: mongoose.Schema.Types.String })
+  registerCode: string;
+
+  @Prop({ type: mongoose.Schema.Types.String })
   code: string;
 }
 

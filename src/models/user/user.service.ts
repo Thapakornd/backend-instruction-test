@@ -1,21 +1,57 @@
-import { Body, Injectable } from '@nestjs/common';
+import { Body, ConflictException, Injectable } from '@nestjs/common';
 import { UserRepository } from './user.repository';
 import { CreateUserDto } from './dto/create-user.dto';
 import { createHash } from 'crypto';
 import { ResponseUserDto } from './dto/res-user.dto';
 import { User } from 'src/schemas/user.schema';
+import { plainToInstance } from 'class-transformer';
+import { ResponseCodeDto } from './dto/res-code.dto';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
   constructor(private userRepository: UserRepository) {}
 
   async create(@Body() createUserDto: CreateUserDto): Promise<void> {
-    await this.userRepository.create(createUserDto);
+    const [usernameExist, emailExist] = await Promise.all([
+      this.userRepository.findOneByUsername(createUserDto.username),
+      this.userRepository.findOneByEmail(createUserDto.email),
+    ]);
+
+    if (emailExist && usernameExist)
+      throw new ConflictException('username and email already exist');
+    if (usernameExist) throw new ConflictException('username already exist');
+    if (emailExist) throw new ConflictException('email already exist.');
+
+    const salt = await bcrypt.genSalt();
+    const hashedPassword = await bcrypt.hash(createUserDto.password, salt);
+
+    const ownCodeUsername = createUserDto?.registerCode
+      ? await this.userRepository.findOneByCode(createUserDto.registerCode)
+      : null;
+    if (createUserDto?.registerCode && ownCodeUsername === null)
+      throw new ConflictException('code register does not exist');
+
+    const registerCode =
+      createUserDto?.registerCode && ownCodeUsername
+        ? createUserDto.registerCode
+        : '';
+
+    const lot = this.getLot(
+      createUserDto.username,
+      createUserDto.firstName,
+      createUserDto.lastName,
+    );
+
+    await this.userRepository.create({
+      ...createUserDto,
+      lot,
+      registerCode,
+      password: hashedPassword,
+    });
   }
 
-  async findOneByUsernameOrEmail(
-    usernameOrEmail: string,
-  ): Promise<User> {
+  async findOneByUsernameOrEmail(usernameOrEmail: string): Promise<User> {
     if (usernameOrEmail)
       return this.userRepository.findOneByUsernameOrEmail(usernameOrEmail);
     throw new Error('username or email should not empty.');
@@ -25,17 +61,31 @@ export class UserService {
     return await this.userRepository.findOneByUsername(username);
   }
 
-  async findOneByEmail(email: string): Promise<ResponseUserDto> {
-    return await this.userRepository.findOneByEmail(email);
-  }
-
-  async getCode(user: ResponseUserDto) {
-    const userCode = this.generateCode(user.firstName, user.lastName);
+  async getCode(user: ResponseUserDto): Promise<ResponseCodeDto> {
+    const userCodeExist = await this.userRepository.findCodeByUsername(
+      user.username,
+    );
+    const userCode =
+      userCodeExist !== null
+        ? userCodeExist
+        : this.generateCode(user.firstName, user.lastName);
+    return plainToInstance(ResponseCodeDto, { code: userCode });
   }
 
   private generateCode(firstname: string, lastname: string): string {
     const timestamp = Date.now();
     const data = `${firstname}-${lastname}-${timestamp}`;
     return createHash('sha-256').update(data).digest('hex');
+  }
+
+  private getLot(
+    username: string,
+    firstname: string,
+    lastname: string,
+  ): number {
+    return Math.max(
+      2,
+      Math.min(30, username.length + firstname.length + lastname.length),
+    );
   }
 }

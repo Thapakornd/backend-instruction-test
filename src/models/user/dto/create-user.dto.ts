@@ -29,5 +29,7 @@ export class CreateUserDto {
 
   @IsOptional()
   @IsString()
-  code: string;
+  registerCode: string;
+
+  lot: number;
 }

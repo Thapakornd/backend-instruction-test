@@ -9,21 +9,7 @@ export class AuthService {
   constructor(private readonly userService: UserService) {}
 
   async createUser(createUserDto: CreateUserDto): Promise<void> {
-    const [usernameExist, emailExist] = await Promise.all([
-      this.userService.findOneByUsername(createUserDto.username),
-      this.userService.findOneByEmail(createUserDto.email),
-    ]);
-
-    if (usernameExist) throw new ConflictException('username already exist');
-    if (emailExist) throw new ConflictException('email already exist.');
-
-    const salt = await bcrypt.genSalt();
-    const hashedPassword = await bcrypt.hash(createUserDto.password, salt);
-
-    await this.userService.create({
-      ...createUserDto,
-      password: hashedPassword,
-    });
+    await this.userService.create(createUserDto);
   }
 
   async validateUser(
