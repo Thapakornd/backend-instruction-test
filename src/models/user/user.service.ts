@@ -10,10 +10,15 @@ import {
   ResponseCodeDto,
   ResponseLotDto,
 } from './dto';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { CodeUsedEvent } from 'src/common/events/code-used.event';
 
 @Injectable()
 export class UserService {
-  constructor(private userRepository: UserRepository) {}
+  constructor(
+    private userRepository: UserRepository,
+    private eventEmitter: EventEmitter2,
+  ) {}
 
   async create(@Body() createUserDto: CreateUserDto): Promise<void> {
     const [usernameExist, emailExist] = await Promise.all([
@@ -52,6 +57,15 @@ export class UserService {
       registerCode,
       password: hashedPassword,
     });
+
+    // send event redeem code
+    if (registerCode !== '') {
+      this.eventEmitter.emit('code.used', {
+        username: createUserDto.username,
+        ownCodeUsername: ownCodeUsername.username,
+        code: registerCode,
+      } as CodeUsedEvent);
+    }
   }
 
   async findOneByUsernameOrEmail(usernameOrEmail: string): Promise<User> {
@@ -84,6 +98,15 @@ export class UserService {
     const userLot = await this.userRepository.findLotByUsername(user.username);
     return plainToInstance(ResponseLotDto, userLot);
   }
+
+  async updateCommissionUser(username: string, commissionUsername: string) {
+    await this.userRepository.insertCommissionUser(
+      username,
+      commissionUsername,
+    );
+  }
+
+  async updateCommissionMoney() {}
 
   private generateCode(firstname: string, lastname: string): string {
     const timestamp = Date.now();

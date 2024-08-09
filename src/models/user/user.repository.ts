@@ -67,4 +67,18 @@ export class UserRepository {
   async findLotByUsername(username: string): Promise<ResponseLotDto> {
     return await this.userModel.findOne({ username }, { lot: true });
   }
+
+  async insertCommissionUser(
+    username: string,
+    commissionUsername: string,
+  ): Promise<void> {
+    await this.userModel.findOneAndUpdate(
+      { username },
+      {
+        $push: {
+          commissionUser: commissionUsername,
+        },
+      },
+    );
+  }
 }

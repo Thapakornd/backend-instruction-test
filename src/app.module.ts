@@ -9,6 +9,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { AuthenticatedGuard } from './auth/guard/authenticated.guard';
 import { PassportModule } from '@nestjs/passport';
 import { SessionSerializer } from './auth/utils/session-serializer';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
@@ -22,6 +23,11 @@ import { SessionSerializer } from './auth/utils/session-serializer';
         uri: env.MONGODB_URI,
         dbName: env.MONGODB_DATABASE,
       }),
+    }),
+    EventEmitterModule.forRoot({
+      wildcard: true,
+      delimiter: '.',
+      ignoreErrors: false,
     }),
   ],
   controllers: [AppController],
