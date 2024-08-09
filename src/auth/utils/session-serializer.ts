@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PassportSerializer } from '@nestjs/passport';
-import { ResponseUserDto } from 'src/models/user/dto/res-user.dto';
+import { ResponseUserDto } from 'src/models/user/dto';
 import { UserService } from 'src/models/user/user.service';
 import { User } from 'src/schemas/user.schema';
 

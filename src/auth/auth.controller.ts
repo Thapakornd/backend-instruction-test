@@ -2,7 +2,6 @@ import {
   Body,
   Controller,
   Post,
-  Req,
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';

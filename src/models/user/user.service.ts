@@ -1,13 +1,15 @@
 import { Body, ConflictException, Injectable } from '@nestjs/common';
 import { UserRepository } from './user.repository';
-import { CreateUserDto } from './dto/create-user.dto';
 import { createHash } from 'crypto';
-import { ResponseUserDto } from './dto/res-user.dto';
 import { User } from 'src/schemas/user.schema';
 import { plainToInstance } from 'class-transformer';
-import { ResponseCodeDto } from './dto/res-code.dto';
 import * as bcrypt from 'bcrypt';
-import { ResponseLotDto } from './dto/res-lot.dto';
+import {
+  CreateUserDto,
+  ResponseUserDto,
+  ResponseCodeDto,
+  ResponseLotDto,
+} from './dto';
 
 @Injectable()
 export class UserService {
@@ -66,15 +68,14 @@ export class UserService {
     const userCodeExist = await this.userRepository.findCodeByUsername(
       user.username,
     );
-    
-    const userCode =
-      userCodeExist?.code
-        ? userCodeExist.code
-        : this.generateCode(user.firstName, user.lastName);
-    
+
+    const userCode = userCodeExist?.code
+      ? userCodeExist.code
+      : this.generateCode(user.firstName, user.lastName);
+
     if (!userCodeExist?.code) {
-      await this.userRepository.insertCode(user.username, userCode)
-    } 
+      await this.userRepository.insertCode(user.username, userCode);
+    }
 
     return plainToInstance(ResponseCodeDto, { code: userCode });
   }
@@ -87,7 +88,11 @@ export class UserService {
   private generateCode(firstname: string, lastname: string): string {
     const timestamp = Date.now();
     const data = `${firstname}-${lastname}-${timestamp}`;
-    return createHash('sha-256').update(data).digest('hex').substring(0, 10).toUpperCase();
+    return createHash('sha-256')
+      .update(data)
+      .digest('hex')
+      .substring(0, 10)
+      .toUpperCase();
   }
 
   private getLot(

@@ -2,10 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from 'src/schemas/user.schema';
-import { CreateUserDto } from './dto/create-user.dto';
-import { ResponseUserDto } from './dto/res-user.dto';
-import { ResponseCodeDto } from './dto/res-code.dto';
-import { ResponseLotDto } from './dto/res-lot.dto';
+import {
+  ResponseUserDto,
+  CreateUserDto,
+  ResponseCodeDto,
+  ResponseLotDto,
+} from './dto';
 
 @Injectable()
 export class UserRepository {

@@ -1,10 +1,8 @@
 import { Controller, Get, Req } from '@nestjs/common';
 import { UserService } from './user.service';
 import { PassportRequest } from 'src/auth/type/auth.interface';
-import { ResponseUserDto } from './dto/res-user.dto';
 import { plainToInstance } from 'class-transformer';
-import { ResponseCodeDto } from './dto/res-code.dto';
-import { ResponseLotDto } from './dto/res-lot.dto';
+import { ResponseCodeDto, ResponseUserDto, ResponseLotDto } from './dto';
 
 @Controller('users')
 export class UserController {
