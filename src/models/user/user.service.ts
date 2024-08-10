@@ -33,16 +33,13 @@ export class UserService {
     const salt = await bcrypt.genSalt();
     const hashedPassword = await bcrypt.hash(createUserDto.password, salt);
 
-    const ownCodeUsername = createUserDto?.registerCode
+    // get own code user id with registerCode
+    const ownCodeId = createUserDto?.registerCode
       ? await this.userRepository.findOneByCode(createUserDto.registerCode)
       : null;
-    if (createUserDto?.registerCode && ownCodeUsername === null)
+    if (createUserDto?.registerCode && ownCodeId === null)
       throw new ConflictException('code register does not exist');
-
-    const registerCode =
-      createUserDto?.registerCode && ownCodeUsername
-        ? createUserDto.registerCode
-        : '';
+    const registerCodeId = ownCodeId?._id;
 
     const lot = this.getLot(
       createUserDto.username,
@@ -53,16 +50,16 @@ export class UserService {
     await this.userRepository.create({
       ...createUserDto,
       lot,
-      registerCode,
+      registerCodeId,
       password: hashedPassword,
     });
 
     // send event redeem code
-    if (registerCode !== '') {
+    if (registerCodeId) {
       this.eventEmitter.emit('code.used', {
         username: createUserDto.username,
-        ownCodeUsername: ownCodeUsername.username,
-        code: registerCode,
+        ownCodeId: registerCodeId,
+        code: createUserDto?.registerCode,
       } as CodeUsedEvent);
     }
   }
@@ -101,15 +98,6 @@ export class UserService {
     const userLot = await this.userRepository.findLotById(user._id);
     return plainToInstance(ResponseLotDto, userLot);
   }
-
-  async updateCommissionUser(username: string, commissionUsername: string) {
-    await this.userRepository.insertCommissionUser(
-      username,
-      commissionUsername,
-    );
-  }
-
-  async updateCommissionMoney() {}
 
   private generateCode(firstname: string, lastname: string): string {
     const timestamp = Date.now();

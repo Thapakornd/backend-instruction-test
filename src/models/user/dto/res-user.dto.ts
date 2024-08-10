@@ -15,8 +15,4 @@ export class ResponseUserDto {
   lastName: string;
 
   password: string;
-
-  constructor(partial: Partial<ResponseUserDto>) {
-    Object.assign(this, partial);
-  }
 }

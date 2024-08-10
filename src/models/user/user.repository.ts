@@ -64,8 +64,8 @@ export class UserRepository {
     return await this.userModel.findById(id, { _id: false, code: true });
   }
 
-  async findOneByCode(code: string): Promise<{ username: string }> {
-    return await this.userModel.findOne({ code }, { username: true });
+  async findOneByCode(code: string): Promise<{ _id: string }> {
+    return await this.userModel.findOne({ code });
   }
 
   async insertCode(id: string, code: string): Promise<void> {
@@ -76,20 +76,6 @@ export class UserRepository {
     return await this.userModel.findById(id, { _id: false, lot: true });
   }
 
-  async insertCommissionUser(
-    username: string,
-    commissionUsername: string,
-  ): Promise<void> {
-    await this.userModel.findOneAndUpdate(
-      { username },
-      {
-        $push: {
-          commissionUser: commissionUsername,
-        },
-      },
-    );
-  }
-
   async findOneById(id: string): Promise<ResponseUserDto> {
     return await this.userModel.findById(id, {
       username: true,
@@ -97,4 +83,6 @@ export class UserRepository {
       lastName: true,
     });
   }
+
+  async updateMoneyCommission() {}
 }

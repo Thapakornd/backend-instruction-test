@@ -1,5 +1,6 @@
 import {
   IsEmail,
+  IsEmpty,
   IsNotEmpty,
   IsOptional,
   IsString,
@@ -31,5 +32,9 @@ export class CreateUserDto {
   @IsString()
   registerCode: string;
 
+  @IsEmpty()
+  registerCodeId: string;
+
+  @IsEmpty()
   lot: number;
 }

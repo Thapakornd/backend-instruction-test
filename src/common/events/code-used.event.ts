@@ -2,7 +2,7 @@
 export class CodeUsedEvent {
     username: string;
 
-    ownCodeUsername: string;
+    ownCodeId: string;
     
     code: string;
 }
