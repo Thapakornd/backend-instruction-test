@@ -8,6 +8,7 @@ import {
   ResponseUserDto,
   ResponseCodeDto,
   ResponseLotDto,
+  ResponseCommissionMoneyDto,
 } from './dto';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { CodeUsedEvent } from 'src/common/events/code-used.event';
@@ -97,6 +98,11 @@ export class UserService {
   async findLot(user: ResponseUserDto): Promise<ResponseLotDto> {
     const userLot = await this.userRepository.findLotById(user._id);
     return plainToInstance(ResponseLotDto, userLot);
+  }
+
+  async findCommissionMoney(user: ResponseUserDto): Promise<ResponseCommissionMoneyDto> {
+    const userCommissionMoney = await this.userRepository.findCommissionMoneyById(user._id);
+    return plainToInstance(ResponseCommissionMoneyDto, userCommissionMoney);
   }
 
   private generateCode(firstname: string, lastname: string): string {

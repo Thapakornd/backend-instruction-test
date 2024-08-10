@@ -2,7 +2,7 @@ import { Controller, Get, Req } from '@nestjs/common';
 import { UserService } from './user.service';
 import { PassportRequest } from 'src/auth/type/auth.interface';
 import { plainToInstance } from 'class-transformer';
-import { ResponseCodeDto, ResponseUserDto, ResponseLotDto } from './dto';
+import { ResponseCodeDto, ResponseUserDto, ResponseLotDto, ResponseCommissionMoneyDto } from './dto';
 
 @Controller('users')
 export class UserController {
@@ -21,5 +21,10 @@ export class UserController {
   @Get('lot')
   async getUserLot(@Req() req: PassportRequest): Promise<ResponseLotDto> {
     return await this.userService.findLot(req.user);
+  }
+
+  @Get('commission-money')
+  async getCommissionMoney(@Req() req: PassportRequest): Promise<ResponseCommissionMoneyDto> {
+    return await this.userService.findCommissionMoney(req.user);
   }
 }

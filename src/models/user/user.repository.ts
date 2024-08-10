@@ -7,6 +7,7 @@ import {
   CreateUserDto,
   ResponseCodeDto,
   ResponseLotDto,
+  ResponseCommissionMoneyDto,
 } from './dto';
 import { UserWithParentEntity } from './entity/user-with-parents.entity';
 
@@ -106,11 +107,23 @@ export class UserRepository {
     ]);
   }
 
-  async updateCommissionMoney(id: string, commissionMoney: number): Promise<void> {
+  async updateCommissionMoney(
+    id: string,
+    commissionMoney: number,
+  ): Promise<void> {
     await this.userModel.findByIdAndUpdate(id, {
       $inc: {
         commissionMoney,
       },
+    });
+  }
+
+  async findCommissionMoneyById(
+    id: string,
+  ): Promise<ResponseCommissionMoneyDto> {
+    return await this.userModel.findById(id, {
+      _id: false,
+      commissionMoney: true,
     });
   }
 }
