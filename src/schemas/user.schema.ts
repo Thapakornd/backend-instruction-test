@@ -33,7 +33,7 @@ export class User {
   @Prop({ type: mongoose.Schema.Types.Number })
   lot: number;
 
-  @Prop({ default: 0, type: mongoose.Schema.Types.String })
+  @Prop({ default: 0, type: mongoose.Schema.Types.Number })
   commissionMoney: number;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })

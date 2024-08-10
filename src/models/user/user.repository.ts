@@ -8,6 +8,7 @@ import {
   ResponseCodeDto,
   ResponseLotDto,
 } from './dto';
+import { UserWithParentEntity } from './entity/user-with-parents.entity';
 
 @Injectable()
 export class UserRepository {
@@ -84,5 +85,32 @@ export class UserRepository {
     });
   }
 
-  async updateMoneyCommission() {}
+  async findUserParentsById(id: string): Promise<UserWithParentEntity[]> {
+    return await this.userModel.aggregate([
+      {
+        $match: {
+          _id: id,
+        },
+      },
+      {
+        $graphLookup: {
+          from: 'users',
+          startWith: '$registerCodeId',
+          connectFromField: 'registerCodeId',
+          connectToField: '_id',
+          depthField: 'level',
+          maxDepth: 3,
+          as: 'parents',
+        },
+      },
+    ]);
+  }
+
+  async updateCommissionMoney(id: string, commissionMoney: number): Promise<void> {
+    await this.userModel.findByIdAndUpdate(id, {
+      $inc: {
+        commissionMoney,
+      },
+    });
+  }
 }
