@@ -13,17 +13,25 @@ import {
 export class UserRepository {
   constructor(@InjectModel(User.name) private userModel: Model<User>) {}
 
-  async findOneByUsernameOrEmail(username: string): Promise<User> {
-    return await this.userModel.findOne({
-      $or: [
-        {
-          email: username,
-        },
-        {
-          username: username,
-        },
-      ],
-    });
+  async findOneByUsernameOrEmail(username: string): Promise<ResponseUserDto> {
+    return await this.userModel.findOne(
+      {
+        $or: [
+          {
+            email: username,
+          },
+          {
+            username: username,
+          },
+        ],
+      },
+      {
+        username: true,
+        firstName: true,
+        lastName: true,
+        password: true,
+      },
+    );
   }
 
   async findOneByEmail(email: string): Promise<ResponseUserDto> {
@@ -52,20 +60,20 @@ export class UserRepository {
     return new this.userModel(createUserDto).save();
   }
 
-  async findCodeByUsername(username: string): Promise<ResponseCodeDto> {
-    return await this.userModel.findOne({ username }, { code: true });
+  async findCodeById(id: string): Promise<ResponseCodeDto> {
+    return await this.userModel.findById(id, { _id: false, code: true });
   }
 
   async findOneByCode(code: string): Promise<{ username: string }> {
     return await this.userModel.findOne({ code }, { username: true });
   }
 
-  async insertCode(username: string, code: string): Promise<void> {
-    await this.userModel.findOneAndUpdate({ username }, { code });
+  async insertCode(id: string, code: string): Promise<void> {
+    await this.userModel.findByIdAndUpdate(id, { code });
   }
 
-  async findLotByUsername(username: string): Promise<ResponseLotDto> {
-    return await this.userModel.findOne({ username }, { lot: true });
+  async findLotById(id: string): Promise<ResponseLotDto> {
+    return await this.userModel.findById(id, { _id: false, lot: true });
   }
 
   async insertCommissionUser(
@@ -80,5 +88,13 @@ export class UserRepository {
         },
       },
     );
+  }
+
+  async findOneById(id: string): Promise<ResponseUserDto> {
+    return await this.userModel.findById(id, {
+      username: true,
+      firstName: true,
+      lastName: true,
+    });
   }
 }

@@ -1,7 +1,6 @@
 import { Body, ConflictException, Injectable } from '@nestjs/common';
 import { UserRepository } from './user.repository';
 import { createHash } from 'crypto';
-import { User } from 'src/schemas/user.schema';
 import { plainToInstance } from 'class-transformer';
 import * as bcrypt from 'bcrypt';
 import {
@@ -68,7 +67,9 @@ export class UserService {
     }
   }
 
-  async findOneByUsernameOrEmail(usernameOrEmail: string): Promise<User> {
+  async findOneByUsernameOrEmail(
+    usernameOrEmail: string,
+  ): Promise<ResponseUserDto> {
     if (usernameOrEmail)
       return this.userRepository.findOneByUsernameOrEmail(usernameOrEmail);
     throw new Error('username or email should not empty.');
@@ -78,24 +79,26 @@ export class UserService {
     return await this.userRepository.findOneByUsername(username);
   }
 
+  async findOneById(id: string) {
+    return await this.userRepository.findOneById(id);
+  }
+
   async getCode(user: ResponseUserDto): Promise<ResponseCodeDto> {
-    const userCodeExist = await this.userRepository.findCodeByUsername(
-      user.username,
-    );
+    const userCodeExist = await this.userRepository.findCodeById(user._id);
 
     const userCode = userCodeExist?.code
       ? userCodeExist.code
       : this.generateCode(user.firstName, user.lastName);
 
     if (!userCodeExist?.code) {
-      await this.userRepository.insertCode(user.username, userCode);
+      await this.userRepository.insertCode(user._id, userCode);
     }
 
     return plainToInstance(ResponseCodeDto, { code: userCode });
   }
 
   async findLot(user: ResponseUserDto): Promise<ResponseLotDto> {
-    const userLot = await this.userRepository.findLotByUsername(user.username);
+    const userLot = await this.userRepository.findLotById(user._id);
     return plainToInstance(ResponseLotDto, userLot);
   }
 

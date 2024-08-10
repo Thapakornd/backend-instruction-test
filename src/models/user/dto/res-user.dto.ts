@@ -1,6 +1,10 @@
-﻿import { Expose } from 'class-transformer';
+﻿import { Expose, Transform } from 'class-transformer';
+import { ObjectId } from 'mongoose';
 
 export class ResponseUserDto {
+  @Expose()
+  _id: string;
+
   @Expose()
   username: string;
 
@@ -9,4 +13,10 @@ export class ResponseUserDto {
 
   @Expose()
   lastName: string;
+
+  password: string;
+
+  constructor(partial: Partial<ResponseUserDto>) {
+    Object.assign(this, partial);
+  }
 }
